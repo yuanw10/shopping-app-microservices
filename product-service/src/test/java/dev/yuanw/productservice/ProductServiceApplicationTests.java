@@ -65,4 +65,9 @@ class ProductServiceApplicationTests {
 
 	}
 
+	@Test
+	public void shouldGetProducts() {
+
+	}
+
 }
