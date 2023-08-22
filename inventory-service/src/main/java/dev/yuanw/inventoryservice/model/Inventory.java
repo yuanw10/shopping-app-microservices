@@ -1,15 +1,14 @@
 package dev.yuanw.inventoryservice.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Table(name = "t_inventories")
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@Setter
 public class Inventory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
