@@ -22,7 +22,7 @@ public class OrderService {
     @Autowired
     private OrderRepository orderRepository;
     @Autowired
-    private WebClient webClient;
+    private WebClient.Builder webClientBuilder;
 
     public Boolean placeOrder(OrderRequest orderRequest) {
         List<OrderLineItem> orderLineItemList = orderRequest.getOrderLineItemDtoList()
@@ -37,8 +37,8 @@ public class OrderService {
         List<String> skuCodes = orderLineItemList.stream().map(OrderLineItem::getSkuCode).toList();
 
         // call Inventory Service, place order if in stock
-        Boolean allItemsInStock = webClient.get()
-                            .uri("http://localhost:8082/api/inventory",
+        Boolean allItemsInStock = webClientBuilder.build().get()
+                            .uri("http://inventory-service/api/inventory",
                                     uriBuilder -> uriBuilder.queryParam("sku_code", skuCodes).build())
                             .retrieve()
                             .bodyToMono(Boolean.class)
