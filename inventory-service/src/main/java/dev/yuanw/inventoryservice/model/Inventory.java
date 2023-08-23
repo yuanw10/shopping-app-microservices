@@ -9,6 +9,7 @@ import lombok.*;
 @NoArgsConstructor
 @Builder
 @Setter
+@Getter
 public class Inventory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

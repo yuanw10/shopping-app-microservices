@@ -5,19 +5,24 @@ import dev.yuanw.orderservice.dto.OrderRequest;
 import dev.yuanw.orderservice.model.Order;
 import dev.yuanw.orderservice.model.OrderLineItem;
 import dev.yuanw.orderservice.repository.OrderRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.List;
 import java.util.UUID;
 
 @Service
 @Transactional
+@Slf4j
 public class OrderService {
 
     @Autowired
     private OrderRepository orderRepository;
+    @Autowired
+    private WebClient webClient;
 
     public Boolean placeOrder(OrderRequest orderRequest) {
         List<OrderLineItem> orderLineItemList = orderRequest.getOrderLineItemDtoList()
@@ -28,10 +33,23 @@ public class OrderService {
                 .orderNumber(UUID.randomUUID().toString())
                 .orderLineItemList(orderLineItemList)
                 .build();
-        try {
+
+        List<String> skuCodes = orderLineItemList.stream().map(OrderLineItem::getSkuCode).toList();
+
+        // call Inventory Service, place order if in stock
+        Boolean allItemsInStock = webClient.get()
+                            .uri("http://localhost:8082/api/inventory",
+                                    uriBuilder -> uriBuilder.queryParam("sku_code", skuCodes).build())
+                            .retrieve()
+                            .bodyToMono(Boolean.class)
+                            .block();   // synchronous
+        if (allItemsInStock) {
             orderRepository.save(order);
+            log.info("All items in stock");
             return true;
-        } catch (Exception e) {
+        }
+        else {
+            log.info("Not all items in stock");
             return false;
         }
     }
