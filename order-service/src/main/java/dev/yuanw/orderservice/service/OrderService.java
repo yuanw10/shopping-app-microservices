@@ -24,7 +24,7 @@ public class OrderService {
     @Autowired
     private WebClient.Builder webClientBuilder;
 
-    public Boolean placeOrder(OrderRequest orderRequest) {
+    public String placeOrder(OrderRequest orderRequest) {
         List<OrderLineItem> orderLineItemList = orderRequest.getOrderLineItemDtoList()
                 .stream()
                 .map(this::mapToItemDto)
@@ -46,11 +46,11 @@ public class OrderService {
         if (allItemsInStock) {
             orderRepository.save(order);
             log.info("All items in stock");
-            return true;
+            return "Order placed successfully";
         }
         else {
             log.info("Not all items in stock");
-            return false;
+            return "Order cannot be placed";
         }
     }
 
