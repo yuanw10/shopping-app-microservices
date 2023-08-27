@@ -2,6 +2,7 @@ package dev.yuanw.orderservice.model;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Builder;
 
@@ -12,6 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@Getter
 public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

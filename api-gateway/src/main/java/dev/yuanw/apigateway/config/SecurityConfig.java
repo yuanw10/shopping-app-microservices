@@ -1,4 +1,4 @@
-package dev.yuanw.config;
+package dev.yuanw.apigateway.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

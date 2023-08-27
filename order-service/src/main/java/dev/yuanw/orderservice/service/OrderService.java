@@ -7,6 +7,7 @@ import dev.yuanw.orderservice.model.OrderLineItem;
 import dev.yuanw.orderservice.repository.OrderRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -23,6 +24,8 @@ public class OrderService {
     private OrderRepository orderRepository;
     @Autowired
     private WebClient.Builder webClientBuilder;
+    @Autowired
+    private KafkaTemplate<String, String> kafkaTemplate;
 
     public String placeOrder(OrderRequest orderRequest) {
         List<OrderLineItem> orderLineItemList = orderRequest.getOrderLineItemDtoList()
@@ -46,6 +49,7 @@ public class OrderService {
         if (allItemsInStock) {
             orderRepository.save(order);
             log.info("All items in stock");
+            kafkaTemplate.send("notificationTopic", order.getOrderNumber());
             return "Order placed successfully";
         }
         else {
